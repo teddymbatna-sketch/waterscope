@@ -1,0 +1,25 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Environnement virtuel
+venv/
+.venv/
+
+# Secrets
+.env
+config/secrets*
+
+# Donnees et logs (on garde juste les dossiers)
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# Editeurs / systeme
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
