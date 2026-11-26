@@ -10,9 +10,13 @@ INDEX_MAPPING = {
         "name": {"type": "text"},
         "timestamp": {"type": "date"},
         "surface_area_hectares": {"type": "float"},
+        "clear_ratio": {"type": "float"},
         "geometry": {"type": "geo_shape"},
     }
 }
+
+# Un seul noeud : pas de replique possible, donc 0 (cluster vert)
+INDEX_SETTINGS = {"number_of_replicas": 0}
 
 
 def get_client() -> Elasticsearch:
@@ -28,7 +32,7 @@ def check_health(es: Elasticsearch) -> str:
 def create_index(es: Elasticsearch, index: str = INDEX_NAME) -> bool:
     if es.indices.exists(index=index):
         return False
-    es.indices.create(index=index, mappings=INDEX_MAPPING)
+    es.indices.create(index=index, mappings=INDEX_MAPPING, settings=INDEX_SETTINGS)
     return True
 
 
@@ -37,9 +41,11 @@ def make_doc_id(waterbody_id: str, timestamp: str) -> str:
     return f"{waterbody_id}_{timestamp}"
 
 
-def create_stat(es: Elasticsearch, doc: dict, index: str = INDEX_NAME) -> str:
+def create_stat(
+    es: Elasticsearch, doc: dict, index: str = INDEX_NAME, refresh: str | bool = "wait_for"
+) -> str:
     doc_id = make_doc_id(doc["waterbody_id"], doc["timestamp"])
-    es.index(index=index, id=doc_id, document=doc, refresh="wait_for")
+    es.index(index=index, id=doc_id, document=doc, refresh=refresh)
     return doc_id
 
 
